@@ -25,4 +25,29 @@ client.on('message', msg => {
     }
 });
 
+if (process.env.VIDEO_ENFORCE_ROLE_ID && process.env.VIDEO_ENFORCE_MESSAGE_CHANNEL_ID) {
+    client.on('voiceStateUpdate', (_, e) => {
+        if (e.channelID == null)
+            return;
+
+        if (!e.member.roles.cache.some(role => role.id === process.env.VIDEO_ENFORCE_ROLE_ID))
+            return;
+        
+        if (e.selfVideo)
+            return;
+
+        const channel = e.guild.channels.cache.find(c => c.id == process.env.VIDEO_ENFORCE_MESSAGE_CHANNEL_ID);
+        if (channel == null)
+            return;
+        channel.send(`<@${e.member.id}> bitte Kamera anmachen!`);
+        setTimeout(() => {
+            const voiceState = e.guild.voiceStates.cache.find(x => x.channelID == e.channelID);
+            if (voiceState != null && !voiceState.selfVideo) {
+                voiceState.kick();
+                channel.send(`<@${e.member.id}> du wurdest wegen fehlender Kamera gekickt!`);
+            }
+        }, 10000)
+    })
+}
+
 client.login(process.env.DISCORD_TOKEN);
