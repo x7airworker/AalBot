@@ -45,10 +45,10 @@ if (process.env.VIDEO_ENFORCE_ROLE_ID && process.env.VIDEO_ENFORCE_MESSAGE_CHANN
             if (voiceState != null && !voiceState.selfVideo) {
                 voiceState.kick();
                 channel.send(`<@${e.member.id}> du wurdest wegen fehlender Kamera gekickt!`);
-            } else {
-                if (sentMsg != null)
-                    sentMsg.delete()
-            }
+            } 
+            
+            if (sentMsg != null)
+                sentMsg.delete()
         }, 10000)
     })
 }
