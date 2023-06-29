@@ -40,13 +40,17 @@ if (process.env.VIDEO_ENFORCE_ROLE_ID && process.env.VIDEO_ENFORCE_MESSAGE_CHANN
         if (channel == null)
             return;
         const sentMsg = await channel.send(`<@${e.member.id}> bitte Kamera anmachen!`);
-        setTimeout(() => {
+        setTimeout(async () => {
             const voiceState = e.guild.voiceStates.cache.find(x => x.channelID === e.channelID && x.member.id === e.member.id);
             if (voiceState != null && !voiceState.selfVideo) {
                 voiceState.kick();
-                channel.send(`<@${e.member.id}> du wurdest wegen fehlender Kamera gekickt!`);
+                const kickMsg = await channel.send(`<@${e.member.id}> du wurdest wegen fehlender Kamera gekickt!`);
+                setTimeout(() => {
+                    if (kickMsg != null)
+                        kickMsg.delete()
+                }, 50000) 
             } 
-            
+
             if (sentMsg != null)
                 sentMsg.delete()
         }, 10000)
